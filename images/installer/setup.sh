@@ -27,4 +27,4 @@ fi
 echo "pullSecret: '$INSTALLER_PULL_SECRET'" >> /root/install/install-config.yaml
 
 # run installer
-bin/openshift-install create cluster --dir=/root/install
+OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE=$INSTALLER_RELEASE_IMAGE_OVERRIDE bin/openshift-install create cluster --dir=/root/install
