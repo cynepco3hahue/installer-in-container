@@ -15,12 +15,15 @@ iptables \
     --comment "Allow insecure libvirt clients"
 
 # dnsmasq configuration
-original_dns=$(cat /etc/resolv.conf | grep nameserver | head -n 1 | awk '{print $2}')
+original_dnss=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
 echo "nameserver 127.0.0.1" > /etc/resolv.conf
 
 mkdir -p /etc/dnsmasq.d
 echo "server=/tt.testing/192.168.126.1" >> /etc/dnsmasq.d/openshift.conf
-echo "server=/#/$original_dns" >> /etc/dnsmasq.d/openshift.conf
+for dns in $original_dnss; do
+    echo "server=/#/$dns" >> /etc/dnsmasq.d/openshift.conf
+done
+
 /usr/sbin/dnsmasq \
     --no-resolv \
     --keep-in-foreground \
@@ -32,7 +35,8 @@ echo "server=/#/$original_dns" >> /etc/dnsmasq.d/openshift.conf
     --clear-on-reload \
     --conf-file=/dev/null \
     --proxy-dnssec \
-    --conf-dir=/etc/dnsmasq.d &
+    --strict-order \
+    --conf-file=/etc/dnsmasq.d/openshift.conf &
 
 # start libvirt
 /usr/sbin/virtlogd &
