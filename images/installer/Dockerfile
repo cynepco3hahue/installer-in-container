@@ -14,7 +14,7 @@ RUN mkdir -p /root/go/src/github.com/openshift/installer; \
     git clone https://github.com/openshift/installer.git $INSTALLER_DIR
 
 COPY hacks /hacks
-COPY install-config.yaml /root/install
+COPY install-config.yaml /install-config.yaml
 COPY setup.sh /setup.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]
