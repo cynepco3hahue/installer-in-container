@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t alukiano/libvirt:28 .
+docker build -t alukiano/libvirt:fedora28 .

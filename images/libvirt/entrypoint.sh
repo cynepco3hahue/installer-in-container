@@ -1,9 +1,6 @@
 #!/usr/bin/bash
 
-# libvirt configuration
-echo "cgroup_controllers = [ ]" >> /etc/libvirt/qemu.conf
-
-# iptables configuration
+# configure iptables
 iptables \
     -I INPUT \
     -p tcp \
@@ -39,5 +36,12 @@ done
     --conf-file=/etc/dnsmasq.d/openshift.conf &
 
 # start libvirt
-/usr/sbin/virtlogd &
-/usr/sbin/libvirtd --listen
+/usr/sbin/virtlogd --daemon
+/usr/sbin/libvirtd --listen --daemon
+
+until virsh list
+do
+    sleep 5
+done
+
+/bin/bash
