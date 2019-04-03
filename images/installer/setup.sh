@@ -1,5 +1,10 @@
 #!/bin/bash
 
+until virsh list
+do
+    sleep 5
+done
+
 # create libvirt storage pool
 virsh pool-define /dev/stdin <<EOF
 <pool type='dir'>
@@ -29,3 +34,12 @@ echo "sshKey: '$ssh_pub_key'" >> /root/install/install-config.yaml
 
 # run installer
 OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE=$INSTALLER_RELEASE_IMAGE_OVERRIDE /openshift-install create cluster --dir=/root/install
+
+# Make sure that all VMs can reach the internet
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i tt0 -o eth0 -j ACCEPT
+
+# Route 6443 and 8443 for the master node
+iptables -t nat -A PREROUTING -p tcp -i eth0 -m tcp --dport 6443 -j DNAT --to-destination 192.168.126.11:6443
+iptables -t nat -A PREROUTING -p tcp -i eth0 -m tcp --dport 8443 -j DNAT --to-destination 192.168.126.11:8443

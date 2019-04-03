@@ -33,4 +33,7 @@ COPY --from=builder /root/go/src/github.com/openshift/installer/bin/openshift-in
 COPY install-config.yaml /
 COPY setup.sh /
 
+EXPOSE 6443/tcp
+EXPOSE 8443/tcp
+
 ENTRYPOINT [ "/entrypoint.sh" ]

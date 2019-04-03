@@ -12,7 +12,7 @@ iptables \
     --comment "Allow insecure libvirt clients"
 
 # dnsmasq configuration
-original_dnss=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
+original_dnss=$(cat /etc/resolv.conf | egrep "^nameserver" | awk '{print $2}')
 echo "nameserver 127.0.0.1" > /etc/resolv.conf
 
 mkdir -p /etc/dnsmasq.d
@@ -37,11 +37,4 @@ done
 
 # start libvirt
 /usr/sbin/virtlogd --daemon
-/usr/sbin/libvirtd --listen --daemon
-
-until virsh list
-do
-    sleep 5
-done
-
-/bin/bash
+/usr/sbin/libvirtd --listen
