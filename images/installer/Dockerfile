@@ -3,7 +3,7 @@ FROM fedora:28 AS builder
 
 ENV TAGS libvirt
 ENV INSTALLER_DIR /root/go/src/github.com/openshift/installer
-ENV INSTALLER_TAG v0.15.0
+ENV INSTALLER_TAG v0.16.1
 
 RUN yum install -y \
     libvirt-devel \
@@ -26,7 +26,7 @@ FROM alukiano/libvirt:fedora28
 ENV TF_VAR_libvirt_master_memory 10240
 ENV TF_VAR_libvirt_master_vcpu 4
 
-ENV INSTALLER_RELEASE_IMAGE_OVERRIDE quay.io/openshift-release-dev/ocp-release:4.0.0-0.8
+ENV INSTALLER_RELEASE_IMAGE_OVERRIDE quay.io/openshift-release-dev/ocp-release:4.0.0-0.11
 
 COPY --from=builder /root/go/src/github.com/openshift/installer/bin/openshift-install /
 
