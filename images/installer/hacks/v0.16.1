@@ -1,16 +1,17 @@
 diff --git a/data/data/libvirt/main.tf b/data/data/libvirt/main.tf
-index f5e6e7304..b8acee3eb 100644
+index f5e6e7304..68076ea87 100644
 --- a/data/data/libvirt/main.tf
 +++ b/data/data/libvirt/main.tf
-@@ -53,6 +53,7 @@ resource "libvirt_network" "net" {
+@@ -53,6 +53,8 @@ resource "libvirt_network" "net" {
        data.libvirt_network_dns_host_template.bootstrap.*.rendered,
        data.libvirt_network_dns_host_template.masters.*.rendered,
        data.libvirt_network_dns_host_template.etcds.*.rendered,
++      data.libvirt_network_dns_host_template.console.*.rendered,
 +      data.libvirt_network_dns_host_template.auth.*.rendered,
      ))}"]
    }]
  
-@@ -107,6 +108,12 @@ data "libvirt_network_dns_host_template" "etcds" {
+@@ -107,6 +109,18 @@ data "libvirt_network_dns_host_template" "etcds" {
    hostname = "etcd-${count.index}.${var.cluster_domain}"
  }
  
@@ -20,16 +21,17 @@ index f5e6e7304..b8acee3eb 100644
 +  hostname = "openshift-authentication-openshift-authentication.apps.${var.cluster_domain}"
 +}
 +
++data "libvirt_network_dns_host_template" "console" {
++  count    = "${var.master_count}"
++  ip       = "${var.libvirt_auth_ip}"
++  hostname = "console-openshift-console.apps.${var.cluster_domain}"
++}
++
  data "libvirt_network_dns_srv_template" "etcd_cluster" {
    count    = "${var.master_count}"
    service  = "etcd-server-ssl"
-@@ -116,3 +123,4 @@ data "libvirt_network_dns_srv_template" "etcd_cluster" {
-   weight   = 10
-   target   = "etcd-${count.index}.${var.cluster_domain}"
- }
-+
 diff --git a/data/data/libvirt/variables-libvirt.tf b/data/data/libvirt/variables-libvirt.tf
-index cea25a520..31b461750 100644
+index cea25a520..a1e3722fc 100644
 --- a/data/data/libvirt/variables-libvirt.tf
 +++ b/data/data/libvirt/variables-libvirt.tf
 @@ -28,6 +28,11 @@ variable "libvirt_master_ips" {
@@ -44,11 +46,6 @@ index cea25a520..31b461750 100644
  # It's definitely recommended to bump this if you can.
  variable "libvirt_master_memory" {
    type        = "string"
-@@ -43,3 +48,4 @@ variable "libvirt_master_vcpu" {
-   description = "CPUs allocated to masters"
-   default     = "4"
- }
-+
 diff --git a/pkg/tfvars/libvirt/libvirt.go b/pkg/tfvars/libvirt/libvirt.go
 index dc9710fa1..d3cb67d09 100644
 --- a/pkg/tfvars/libvirt/libvirt.go

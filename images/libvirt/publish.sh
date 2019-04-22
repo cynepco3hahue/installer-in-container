@@ -1,4 +1,4 @@
 #!/bin/bash
 
-docker tag alukiano/libvirt:fedora28 docker.io/alukiano/libvirt:fedora28
-docker push docker.io/alukiano/libvirt:fedora28
+docker tag alukiano/libvirt:fedora29 docker.io/alukiano/libvirt:fedora29
+docker push docker.io/alukiano/libvirt:fedora29
